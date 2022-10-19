@@ -2,7 +2,6 @@ import picar_4wd as fc
 import random
 import time
 
-# Global Variables
 power = 30
 
 def main():
@@ -36,4 +35,4 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         fc.stop()
-        print(r'\nsystem stopped')
+        print(" ----quit")
