@@ -6,13 +6,13 @@ import time
 power = 30
 
 def main():
-    # While the script is running, auto detect objects in front, move forward or
-    # randomly pick a left/right direction to move forward.
+    # While the script is running, auto detect objects in front, move forward or randomly
+    # pick a left/right direction to move forward.
     
     while True:
-        # scan_step max angle is set to 150 degree;
-        # send ultrasonic wave every 30 degree and return 0, 1, or 2 after a 150 degree scan
-        # if 150 degree scan is not finished, return false
+        # scan_step max angle is set to 150 degree; send ultrasonic wave every 30 degree 
+        # and return a list of 0, 1, or 2 after a 150 degree scan; if 150 degree scan is 
+        # not finished, return false.
         scan = fc.scan_step(30)
         if not scan:
             continue
