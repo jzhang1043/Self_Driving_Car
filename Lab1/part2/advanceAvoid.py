@@ -9,6 +9,7 @@ class Picar():
         self.power = 1 # car power
         self.size = 30 # car length and width (cm)
         self.distance = 0 # relative car travelled distance in cm
+        self.map = Map()
 
     
     def move(self,dir):
@@ -21,20 +22,25 @@ class Picar():
             fc.turn_left(self.power)
             time.sleep(0.75) # 90 degrees left
             fc.stop()
+            self.map.updateCarDir('l')
         elif dir == 'r':
             fc.turn_right(self.power)
             time.sleep(0.75) # 90 degrees right
             fc.stop()
+            self.map.updateCarDir('r')
         else:
             fc.stop()
+        return
     
     def start_speed_timer(self):
         # start speed timer
         fc.start_speed_thread()
+        return
 
     def end_speed_timer(self):
         # end speed timer
         fc.end_speed_thread()
+        return
 
     def getSpeed(self):
         # get car speed in (cm/s)
@@ -54,13 +60,12 @@ class Picar():
             ret += [round(fc.get_distance_at(i-90))]
             time.sleep(0.02)
         return ret
-    
 
 class Map():
     def __init__(self):
-        self.map = np.zeros(shape=(20,20), dtype=int) # init map
+        self.map = np.ones(shape=(40,40), dtype=int) # init map
         self.mapLen = len(self.map) # map length
-        self.carLocation = (9,9) # car location (ultrasonic sensor location)
+        self.carLocation = (20,20) # car location (ultrasonic sensor location)
         self.carDir = 'N' # car direction
 
     def getCarLocation(self):
@@ -70,9 +75,28 @@ class Map():
     def setCarLocation(self, p):
         # set car position
         self.carLocation = p
+        return
 
-    def setCarDir(self,dir):
-        self.carDir = dir
+    def updateCarDir(self,turn):
+        if turn == 'l':
+            if self.carDir == 'N':
+                self.carDir = 'W'
+            elif self.carDir == 'W':
+                self.carDir = 'S'
+            elif self.carDir == 'S':
+                self.carDir == 'E'
+            elif self.carDir == 'E':
+                self.carDir == 'N'
+        elif turn == 'r':
+            if self.carDir == 'N':
+                self.carDir = 'E'
+            elif self.carDir == 'E':
+                self.carDir = 'S'
+            elif self.carDir == 'S':
+                self.carDir == 'W'
+            elif self.carDir == 'W':
+                self.carDir == 'N'
+                
 
     def updateMap(self,coor,tag):
         # update the map 
@@ -81,8 +105,9 @@ class Map():
         x,y = coor
         if x < 0 or y < 0 or x >= self.mapLen or y >= self.mapLen:
             return -1
-        else:
+        if self.map[self.mapLen - 1 - y][x] != 0:
             self.map[self.mapLen - 1 - y][x] = tag
+        return
 
     def getObjPoints(self, distlist):
         # get object's location using list of distance from Picar().object_dist_list()
@@ -118,27 +143,37 @@ class Map():
             x0,y0 = points[i]
         return ret
 
+    def drawmap(self):
+        with open("map.csv",'w') as file:
+            for i in self.map:
+                for j in i:
+                    file.write(str(j) + " ")
+                file.write('\n')
+        return
 
 ###################################################
 def main():
+    # init
     mymap.setCarDir("N")
     mycar.start_speed_timer()
-    mymap.updateMap(mymap.getCarLocation(),6)
 
-    distList = mycar.object_dist_list()
-    points = mymap.getObjPoints(distList)
-    newpoints = mymap.rasterization(points)
-    for ele in newpoints:
-        mymap.updateMap(ele,2)
-    print(mymap.map)
-    
+    # test
+    # mymap.updateMap(mymap.getCarLocation(),5)
+    # distList = mycar.object_dist_list()
+    # rastP = mymap.rasterization(mymap.getObjPoints(distList))
+    # for p in rastP:
+    #     mymap.updateMap(p,0)
+    # print(distList)
+    # mymap.drawmap()
 
-    print(distList)
-    # print(mymap.map)
-
-
-    # while 1:
-    #     continue
+    # mycar.move('f')
+    # timeout = 1 # sec
+    # timeout_start = time.time()
+    # while time.time() < timeout_start + timeout:
+    #     print(mycar.getSpeed())
+    #     print(time.time() - timeout_start) 
+    #     time.sleep(0.1)
+    # mycar.move('')
 
 if __name__ == '__main__':
     try:
