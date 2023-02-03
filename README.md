@@ -5,4 +5,3 @@ This is my Raspberry Pi Project. To setup the car, go to this [link](https://git
 
 *Note: If Raspberry Pi system has installed Anaconda/miniconda/miniforge, the picar_4wd module will not work*.
 
-### Part 1
